@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # 快速上手
 
-CBCTF 通过 Kubernetes 的方式进行部署，推荐使用 [k3s](https://k3s.io/) 作为集群环境。相关的部署细节请参考 `部署`。
+CBCTF 通过 Kubernetes 的方式进行部署，推荐使用 [k3s](https://k3s.io/) 作为集群环境。相关的部署细节请参考 [部署](/docs/depoly/depoly.md)。
 
 ## 配置
 
@@ -16,7 +16,7 @@ CBCTF 通过 Kubernetes 的方式进行部署，推荐使用 [k3s](https://k3s.i
    go build
    ```
 
-2. 初次运行将自动生成 `config.yaml` 配置文件。请根据实际情况修改。具体字段解释见 `settings`。
+2. 初次运行将自动生成 `config.yaml` 配置文件。请根据实际情况修改。具体字段解释见 [配置](/docs/depoly/settings.md)。
 
    ```yaml
    backend: http://127.0.0.1:8000
@@ -115,7 +115,7 @@ CBCTF 通过 Kubernetes 的方式进行部署，推荐使用 [k3s](https://k3s.i
    
 ## 运行
 
-1. 确保 `config.yaml` 配置正确后，运行 `CBCTF` 对集群进行初始化配置（注：并非安装集群，而是对程序所需要的资源进行初始化。安装集群请参考 `部署`）。
+1. 确保 `config.yaml` 配置正确后，运行 `CBCTF` 对集群进行初始化配置（注：并非安装集群，而是对程序所需要的资源进行初始化。安装集群请参考 [部署](/docs/depoly/depoly.md)）。
 
    ```bash
    ./CBCTF k8s init
