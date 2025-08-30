@@ -91,3 +91,11 @@ bash install.sh
 ```yaml
 storageclass.kubernetes.io/is-default-class: 'false'
 ```
+
+## 跨云厂商部署节点
+
+云服务器不支持部署 VPC 网络靶机，所以需要在启动靶机时排除这些节点，可为不支持的节点打上污点，此时需要 VPC 网络功能的靶机将不会部署在这些节点上
+
+```text
+vpc-network=unacceptable:NoSchedule
+```
