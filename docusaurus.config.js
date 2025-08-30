@@ -93,7 +93,6 @@ const config = {
             position: 'right',
             label: 'Guide',
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
           {
             href: 'https://github.com/0RAYS/CBCTF-docs',
             label: 'GitHub',
@@ -117,8 +116,12 @@ const config = {
             title: 'More',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
+                label: '0RAYS',
+                href: 'https://0rays.club',
+              },
+              {
+                label: 'Training',
+                href: 'https://training.0rays.club',
               },
               {
                 label: 'GitHub',
