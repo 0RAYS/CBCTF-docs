@@ -11,7 +11,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'CBCTF Docs',
-  tagline: '0RAYS CLUB',
+  tagline: '',
   favicon: 'img/0RAYS.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
