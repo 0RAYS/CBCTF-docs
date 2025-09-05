@@ -134,21 +134,48 @@ https://training.0rays.club
 
 全局日志配置
 
+```text
+log:
+  level: info
+  save: true
+```
+
 #### level
 
 终端日志等级，支持 `DEBUG` `INFO` `WARNING` `ERROR` 四种等级，默认 `INFO`
+
+```text
+log:
+  level: info
+```
 
 #### save
 
 是否保存日志至文件，默认 `true`，日志文件位于 `./logs` 目录下
 
+```text
+log:
+  save: true
+```
+
 ### asynq
 
 异步任务队列配置
 
+```text
+asynq:
+  level: warning
+  concurrency: 50
+```
+
 #### level
 
 日志输出等级，支持 `DEBUG` `INFO` `WARNING` `ERROR` 四种等级，默认 `WARNING`
+
+```text
+asynq:
+  level: warning
+```
 
 #### concurrency
 
@@ -156,23 +183,68 @@ https://training.0rays.club
 
 该值并非主程最大 Goroutine 数，实际 Goroutine 数可能会大于该值
 
+```text
+asynq:
+  concurrency: 50
+```
+
 ### gin
+
+```text
+gin:
+  mode: release
+  host: 127.0.0.1
+  port: 8000
+  proxies:
+    - 10.0.0.1
+  upload:
+    max: 8
+  rate:
+    global: 100
+    whitelist:
+      - ::1
+      - 127.0.0.1
+  log:
+    whitelist:
+      - /metrics
+```
 
 #### mode
 
 运行模式，支持 `debug` `release` `test` 三种模式，默认 `release`，影响日志输出等级
 
+```text
+gin:
+  mode: release
+```
+
 #### host
 
 监听地址
+
+```text
+gin:
+  host: 127.0.0.1
+```
 
 #### port
 
 监听端口
 
+```text
+gin:
+  port: 8000
+```
+
 #### proxies
 
 可信代理服务器列表，支持 CIDR 格式，默认 `[]`，若部署在反向代理后面，需配置该字段，否则无法获取真实客户端 IP 地址
+
+```text
+gin:
+  proxies:
+    - 192.168.0.1
+```
 
 #### upload
 
@@ -181,6 +253,11 @@ https://training.0rays.club
 ##### max
 
 单次上传文件大小限制，单位 `MiB`，默认 `8`
+
+```text
+gin:
+  upload: 8
+```
 
 #### rate
 
@@ -192,9 +269,23 @@ https://training.0rays.club
 
 部分接口有独立接口限制
 
+```text
+gin:
+  rate:
+    global: 100
+```
+
 ##### whitelist
 
 请求白名单，支持 CIDR 格式，默认 `["::1", "127.0.0.1"]`，白名单内的请求不受速率限制
+
+```text
+gin:
+  rate:
+    whitelist:
+      - 127.0.0.1
+      - ::1
+```
 
 #### log
 
@@ -206,9 +297,30 @@ https://training.0rays.club
 
 不支持前缀匹配，须为完整路径，对部分携带 URI 的路径须与[源代码](https://github.com/0RAYS/CBCTF/blob/main/internal/router/router.go)匹配
 
+```text
+gin:
+  log:
+    whitelist:
+      - /metrics
+```
+
 ### gorm
 
 数据库配置
+
+```text
+gorm:
+  mysql:
+    host: 127.0.0.1
+    port: 3306
+    user: cbctf
+    pwd: password
+    db: cbctf
+    mxopen: 100
+    mxidle: 10
+  log:
+    level: silent
+```
 
 #### mysql
 
@@ -218,29 +330,71 @@ MySQL 数据库配置
 
 数据库地址
 
+```text
+gorm:
+  mysql:
+    host: 127.0.0.1
+```
+
 ##### port
 
 数据库端口
+
+```text
+gorm:
+  mysql:
+    port: 3306
+```
 
 ##### user
 
 数据库用户名
 
+```text
+gorm:
+  mysql:
+    user: cbctf
+```
+
 ##### pwd
 
 数据库密码
+
+```text
+gorm:
+  mysql:
+    pwd: password
+```
 
 ##### db
 
 数据库名称
 
+```text
+gorm:
+  mysql:
+    db: cbctf
+```
+
 ##### mxopen
 
 数据库最大连接数，默认 `100`，需根据服务器性能进行调整
 
+```text
+gorm:
+  mysql:
+    mxopen: 100
+```
+
 ##### mxidle
 
 数据库最大空闲连接数，默认 `10`，需根据服务器性能进行调整
+
+```text
+gorm:
+  mysql:
+    mxidle: 10
+```
 
 #### log
 
@@ -250,37 +404,112 @@ Gorm 日志配置
 
 日志输出等级，支持 `INFO` `WARNING` `ERROR` `SILENT` 四种等级，默认 `SILENT`
 
+```text
+gorm:
+  log:
+    level: silent
+```
+
 ### redis
 
 Redis 配置
+
+```text
+redis:
+  host: 127.0.0.1
+  port: 6379
+  pwd: password
+```
 
 #### host
 
 Redis 地址
 
+```text
+redis:
+  host: 127.0.0.1
+```
+
 #### port
 
 Redis 端口
+
+```text
+redis:
+  port: 6379
+```
 
 #### pwd
 
 Redis 密码
 
+```text
+redis:
+  pwd: password
+```
+
 ### k8s
 
 Kubernetes 配置
+
+```text
+k8s:
+  config: ./admin.conf
+  namespace: cbctf
+  external_network:
+    cidr: 192.168.0.0/16
+    gateway: 192.168.0.1
+    interface: eth0
+    exclude_ips:
+      - 192.168.0.1
+      - 192.168.0.254
+  tcpdump: nicolaka/netshoot:latest
+  frpc:
+    on: false
+    frpc_image: snowdreamtech/frpc:latest
+    nginx_image: nginx:latest
+    frps:
+      - host: example.com
+        port: 7000
+        token: token
+        allowed_ports:
+          - from: 10000
+            to: 30000
+            exclude:
+              - 20000
+          - from: 40000
+            to: 60000
+            exclude:
+              - 50000
+  generator_worker: 2
+```
 
 #### config
 
 Kubeconfig 文件路径
 
+```text
+k8s:
+  config: ./admin.conf
+```
+
 #### namespace
 
 Kubernetes 命名空间，同时作为部分资源名称前缀，默认 `cbctf`
 
+```text
+k8s:
+  namespace: cbctf
+```
+
 #### tcpdump
 
 用于网络抓包的 Docker 镜像，默认 `nicolaka/netshoot:latest`，可自行镜像
+
+```text
+k8s:
+  tcpdump: nicolaka/netshoot:latest
+```
 
 #### external_network
 
@@ -294,17 +523,44 @@ Kubernetes 命名空间，同时作为部分资源名称前缀，默认 `cbctf`
 
 宿主机所在网段，例：10.233.0.0、16
 
+```text
+k8s:
+  external_network:
+    cidr: 192.168.0.0/16
+```
+
 ##### gateway
 
 宿主机网关地址，例：10.233.0.1
+
+```text
+k8s:
+  external_network:
+    gateway: 192.168.0.1
+```
 
 ##### interface
 
 宿主机网卡名称，例：eth0
 
+```text
+k8s:
+  external_network:
+    interface: eth0
+```
+
 ##### exclude_ips
 
 不会分配给靶机的 IP 地址，避免与宿主机 IP 地址冲突，例：`["10.233.8.1", "10.233.0.1"]`
+
+```text
+k8s:
+  external_network:
+    exclude_ips:
+      - 192.168.0.1
+      - 192.168.0.254
+  generator_worker: 2
+```
 
 #### frpc
 
@@ -314,17 +570,53 @@ FRP 相关配置
 
 是否启用 FRP 功能，默认 `false`，启用后可通过 FRP 进行靶机端口映射
 
+```text
+k8s:
+  frpc:
+    on: false
+```
+
 ##### frpc_image
 
 FRP 客户端 Docker 镜像，默认 `snowdreamtech/frpc:latest`，可自行镜像
+
+```text
+k8s:
+  frpc:
+    frpc_image: snowdreamtech/frpc:latest
+```
 
 ##### nginx_image
 
 Nginx 反向代理 Docker 镜像，默认 `nginx:latest`，可自行镜像
 
+```text
+k8s:
+  frpc:
+    nginx_image: nginx:latest
+```
+
 ##### frps
 
 FRP 服务器，可配置多个，随机选择一个进行内网穿透
+
+```text
+k8s:
+  frpc:
+    frps:
+      - host: example.com
+        port: 7000
+        token: token
+        allowed_ports:
+          - from: 10000
+            to: 30000
+            exclude:
+              - 20000
+          - from: 40000
+            to: 60000
+            exclude:
+              - 50000
+```
 
 ###### host
 
@@ -346,18 +638,45 @@ FRP 服务器允许映射的端口范围
 
 动态附件生成器容器数量倍率，单个题目实际运行的 Pod 数量为 `len(nodes) * generator_worker`，默认 `2`，需根据集群节点数量与服务器性能进行调整
 
+```text
+k8s:
+  generator_worker: 2
+```
+
 ### nfs
 
 NFS 配置
+
+```text
+nfs:
+  server: 127.0.0.1
+  path: /mnt/data
+  storage: 10Gi
+```
 
 #### server
 
 NFS 服务器地址
 
+```text
+nfs:
+  server: 127.0.0.1
+```
+
 #### path
 
 NFS 服务器共享路径，需确保该路径可读写
 
+```text
+nfs:
+  path: /mnt/data
+```
+
 #### storage
 
 创建的 NFS PVC 存储空间大小，单位 `Gi`、`Mi`，默认 `10Gi`，需根据实际情况进行调整
+
+```text
+nfs:
+  storage: 10Gi
+```
