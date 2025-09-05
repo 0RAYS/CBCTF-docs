@@ -8,10 +8,16 @@ CBCTF 通过 Kubernetes 的方式进行部署，推荐使用 [k3s](https://k3s.i
 
 ## 配置
 
-1. 下载 `release二进制文件` 或 克隆仓库并编译
+1. 下载 `release二进制文件` 或 克隆前后端仓库并编译。此时，前端将被打包为 `exe` 的一部分
 
    ```bash
+   git clone https://github.com/0RAYS/CBCTF-frontend.git
+   cd CBCTF-frontend
+   pnpm install && pnpm run build
+   cd ..
+   
    git clone https://github.com/0RAYS/CBCTF.git
+   cp -r CBCTF-frontend/dist/* CBCTF/frontend/dist/
    cd CBCTF
    go build
    ```
