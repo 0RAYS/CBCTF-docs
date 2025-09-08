@@ -19,7 +19,7 @@ CBCTF 通过 Kubernetes 的方式进行部署，推荐使用 [k3s](https://k3s.i
    git clone https://github.com/0RAYS/CBCTF.git
    cp -r CBCTF-frontend/dist/* CBCTF/frontend/dist/
    cd CBCTF
-   go build
+   go build -ldflags="-s -w" -trimpath -o CBCTF
    ```
 
 2. 初次运行将自动生成 `config.yaml` 配置文件。请根据实际情况修改。具体字段解释见 [配置](/docs/depoly/settings.md)。
