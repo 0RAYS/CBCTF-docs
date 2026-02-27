@@ -135,7 +135,7 @@ CBCTF 提供三种部署方式：
 - Node.js 22+，pnpm v10+
 - MySQL 8.0+
 - Redis 6.0+
-- Kubernetes 集群（参考 [集群部署](/docs/depoly/depoly)）
+- Kubernetes 集群（参考 [集群部署](/docs/depoly/depoly.md)）
 
 ### 编译
 

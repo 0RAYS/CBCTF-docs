@@ -8,7 +8,7 @@ CBCTF 提供官方 Helm Chart，可一键在 Kubernetes 集群上部署完整的
 
 ## 前置条件
 
-- Kubernetes 集群（参考 [集群部署](/docs/depoly/depoly)）
+- Kubernetes 集群（参考 [集群部署](/docs/depoly/depoly.md)）
 - Helm v3.10+
 - 集群已安装：
   - Multus CNI（VPC 网络模式必需）
