@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # 简介
 
-[![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/Go-1.26+-blue.svg)](https://golang.org)
 [![License](https://img.shields.io/badge/License-Apache-green.svg)](https://github.com/0RAYS/CBCTF/blob/main/LICENSE)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-1.20+-blue.svg)](https://kubernetes.io)
 [![Redis](https://img.shields.io/badge/Redis-6.0+-red.svg)](https://redis.io)

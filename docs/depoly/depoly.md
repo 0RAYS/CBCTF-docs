@@ -57,7 +57,7 @@ kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-c
 
 ### 不推荐
 
-如需使用 `Thick Pulgin`，需注意一下问题
+如需使用 `Thick Plugin`，需注意以下问题
 
 - [OOMKilled](https://github.com/k8snetworkplumbingwg/multus-cni/issues/1346)
 - [Text file busy](https://github.com/k8snetworkplumbingwg/multus-cni/issues/1221)
