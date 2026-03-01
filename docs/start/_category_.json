@@ -1,8 +1,1 @@
-{
-  "label": "开始",
-  "position": 1,
-  "link": {
-    "type": "generated-index",
-    "description": "本文档不包含详细的 Kubernetes 集群建设，仅涉及 CBCTF 环境依赖部分"
-  }
-}
+{"label": "开始", "position": 1}

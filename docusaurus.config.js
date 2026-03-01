@@ -41,8 +41,8 @@ const config = {
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: 'zh-Hans',
+    locales: ['zh-Hans'],
   },
 
   presets: [
@@ -57,21 +57,7 @@ const config = {
           editUrl:
             'https://github.com/0RAYS/CBCTF-docs/tree/master/',
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/0RAYS/CBCTF-docs/tree/master/',
-          // Useful options to enforce blogging best practices
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -95,7 +81,7 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'guideSidebar',
             position: 'right',
-            label: 'Guide',
+            label: '文档',
           },
           {
             href: 'https://github.com/0RAYS/CBCTF-docs',
@@ -139,6 +125,7 @@ const config = {
       prism: {
         theme: prismThemes.dracula,
         darkTheme: prismThemes.dracula,
+        additionalLanguages: ['yaml', 'bash', 'ini'],
       },
     }),
 };

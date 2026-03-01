@@ -4,142 +4,56 @@ sidebar_position: 1
 
 # 简介
 
-[![Go Version](https://img.shields.io/badge/Go-1.26+-blue.svg)](https://golang.org)
-[![License](https://img.shields.io/badge/License-Apache-green.svg)](https://github.com/0RAYS/CBCTF/blob/main/LICENSE)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-1.20+-blue.svg)](https://kubernetes.io)
-[![Redis](https://img.shields.io/badge/Redis-6.0+-red.svg)](https://redis.io)
+[![Go Version](https://img.shields.io/badge/Go-1.26-blue.svg)](https://golang.org)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0+-orange.svg)](https://mysql.com)
+[![Redis](https://img.shields.io/badge/Redis-6.0+-red.svg)](https://redis.io)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-1.20+-blue.svg)](https://kubernetes.io)
+[![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/0RAYS/CBCTF/blob/main/LICENSE)
 
-> **CBCTF** 是一个基于 Go 语言开发的高性能 CTF 竞赛平台
+**CBCTF** 是由 0RAYS 开发的 Kubernetes 原生 CTF 竞赛平台。平台使用 Go 语言编写，将 React 前端嵌入单一二进制，部署简单，同时深度集成 Kubernetes，支持动态容器靶机、VPC 网络隔离、流量捕获等高级功能。
 
-## ✨ 核心特性
+## 核心功能
 
-### 🎯 多样化题目类型
+| 功能 | 问答题 | 静态题 | 动态附件题 | 容器题 |
+|------|:------:|:------:|:----------:|:------:|
+| 共享附件 | ✓ | ✓ | — | — |
+| 动态附件（per-team） | — | — | ✓ | — |
+| 静态 Flag | ✓ | ✓ | ✓ | ✓ |
+| 动态 Flag | — | — | ✓ | ✓ |
+| UUID Flag | — | — | ✓ | ✓ |
+| 容器靶机 | — | — | — | ✓ |
+| Pod 网络 | — | — | — | ✓ |
+| VPC 网络隔离 | — | — | — | ✓ |
+| 流量捕获 | — | — | — | ✓ |
+| 需要 Kubernetes | — | — | ✓ | ✓ |
 
-#### 📝 题目类型
+## 架构
 
-- **静态题目** - 队伍间共用附件，适合传统 CTF 题目
-- **动态题目** - 实时生成唯一附件，确保每个队伍获得不同的挑战
-- **动态容器** - 自动生成并启动队伍隔离的容器环境
+CBCTF 后端采用 Go 1.26 + Gin 框架，前端使用 React 19 + Vite 7，生产构建产物通过 `go:embed` 嵌入 Go 二进制。平台运行时依赖 MySQL 存储数据、Redis 缓存与任务队列，并通过 client-go 与 Kubernetes 集群交互以管理容器靶机。
 
-#### 🚩 Flag 类型
+## 依赖说明
 
-| 类型            | 格式              | 说明             |
-|---------------|-----------------|----------------|
-| **静态 Flag**   | `static{固定内容}`  | 每次生成的 flag 均相等 |
-| **动态 Flag**   | `dynamic{随机内容}` | 基于模板随机变化，保持可读性 |
-| **UUID Flag** | `uuid{}`        | 标准 UUID 格式     |
+| 组件 | 版本要求 | 用途 |
+|------|---------|------|
+| MySQL | 8.0+ | 主数据存储 |
+| Redis | 6.0+ | 缓存、Asynq 任务队列 |
+| Kubernetes | 1.20+ | 动态附件生成、容器靶机 |
+| KubeOVN | 推荐 v1.14.5 | VPC 网络隔离（可选） |
+| Multus CNI | 最新稳定版 | 多网卡支持，VPC 模式必须（可选） |
 
-> 💡 **动态容器支持**：Flag 可注入至环境变量或作为文件挂载至指定路径
+> Kubernetes、KubeOVN 和 Multus 仅在使用动态附件题或容器题时需要。若仅使用问答题和静态题，只需 MySQL 和 Redis。
 
-#### 🏅 分值系统
+## 技术栈
 
-- **静态分数** - 每个 flag 的分数不随接触人数变化
-- **线性分数** - 随着接触人数增加，等量减少分值
-- **非线性分数** - 使用公式：`(MinScore - InitScore) / (Decay²) * (Solvers²) + InitScore`
-
-> 🎁 **三血奖励**：一二三血奖励依次为初始分数的 5%、3%、1%
-
-### 🚀 技术架构
-
-- **🔄 动态附件生成** - 基于 Kubernetes 的容器化生成
-- **🌐 自定义网络** - 基于 Kube-OVN 的 VPC 网络隔离
-- **📧 邮件验证** - SMTP 邮件验证功能
-- **📝 Writeup 管理** - 平台内 Writeup 收集与下载
-- **📊 事件日志** - 完整的比赛期间动作事件记录
-- **⚡ 高性能缓存** - 基于 Redis 的数据缓存
-- **💾 数据存储** - MySQL 数据库存储
-- **📁 文件存储** - 基于 NFS 的文件存储系统
-- **🔥 预热机制** - 支持镜像预热、容器预热
-
-## 🐳 动态附件系统
-
-### 核心优势
-
-- ✅ **环境隔离** - 采用 Docker 容器进行生成，与主机环境完全隔离
-- ✅ **灵活配置** - 可基于通用 Docker 镜像，通过上传 Python 脚本进行生成
-- ✅ **减轻负担** - 大幅减轻出题人的配置压力
-
-### 📖 使用示例
-
-详细示例请参考：[动态附件示例](https://github.com/0RAYS/CBCTF/blob/main/example/dynamic/README.md)
-
-## 🏗️ 动态容器系统
-
-### 网络环境区分
-
-后端通过以下方式区分题目网络环境：
-
-| 环境类型    | 判断条件                              | 配置要求                          |
-|---------|-----------------------------------|-------------------------------|
-| **Pod** | docker-compose 中未配置 `networks` 字段 | 使用默认网络                        |
-| **VPC** | docker-compose 中配置了 `networks` 字段 | 所有容器须配置 `networks`，手动指定 IP 地址 |
-
-### 📁 配置示例
-
-#### Pod 环境
-
-```yaml
-# 示例配置
-version: '3'
-services:
-  web:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-```
-
-详细示例：[Pod 配置示例](https://github.com/0RAYS/CBCTF/blob/main/example/pods/pod/docker-compose.yml)
-
-#### VPC 环境
-
-```yaml
-# 示例配置
-version: '3'
-services:
-  web:
-    image: nginx:alpine
-    networks:
-      vpc:
-        ipv4_address: 192.168.1.10
-networks:
-  vpc:
-    external: true
-```
-
-详细示例：[VPC 配置示例](https://github.com/0RAYS/CBCTF/blob/main/example/pods/vpc/docker-compose.yml)
-
-## 🔧 环境依赖
-
-### 必需组件
-
-| 组件                                                                           | 版本要求  | 说明           |
-|------------------------------------------------------------------------------|-------|--------------|
-| **[Kube-OVN](https://kubeovn.github.io/docs/stable/start/prepare/)**         | 最新稳定版 | 自定义 VPC 网络支持 |
-| **[Multus](https://github.com/k8snetworkplumbingwg/multus-cni/tree/master)** | 最新版本  | 多网络接口支持      |
-
-### ⚠️ 重要提示
-
-**Multus 插件选择建议：**
-
-- ✅ **推荐使用 Thin Plugin** - 无需手动配置，稳定性更好
-- ❌ **避免使用 Thick Plugin** - 容易发生以下问题：
-    - [OOMKilled](https://github.com/k8snetworkplumbingwg/multus-cni/issues/1346)
-    - [Text file busy](https://github.com/k8snetworkplumbingwg/multus-cni/issues/1221)
-
-如需使用 Thick Plugin，请参考：
-
-- [Issue #1346](https://github.com/k8snetworkplumbingwg/multus-cni/issues/1346#issuecomment-2644110944)
-- [PR #1213](https://github.com/k8snetworkplumbingwg/multus-cni/pull/1213)
-
-## 📄 许可证
-
-本项目采用 [Apache 许可证](https://github.com/0RAYS/CBCTF/blob/main/LICENSE)。
-
----
-
-<div align="center">
-
-**⭐ 如果这个项目对您有帮助，请给我们一个星标！**
-
-</div>
+| 层 | 技术 |
+|----|------|
+| 后端语言 | Go 1.26 |
+| Web 框架 | Gin v1.11 |
+| 前端框架 | React 19 + Vite 7 |
+| 任务队列 | Asynq v0.26（基于 Redis） |
+| ORM | GORM v1.31 + MySQL 驱动 |
+| K8s SDK | client-go v0.35 |
+| 网络隔离 | KubeOVN + Multus CNI |
+| 认证 | JWT（golang-jwt/jwt v5）+ 设备指纹 |
+| 流量捕获 | gopacket v1.5（需 libpcap） |
+| 地理信息 | MaxMind GeoLite2-City |

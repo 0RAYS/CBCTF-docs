@@ -8,19 +8,18 @@ import Heading from '@theme/Heading';
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className="hero__title">
-          {siteConfig.title}
+          CBCTF
         </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <p className="hero__subtitle">Kubernetes 原生 CTF 竞赛平台</p>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/start/introduction">
-            Quick Start
+            开始使用
           </Link>
         </div>
       </div>
@@ -33,7 +32,7 @@ export default function Home() {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      description="Kubernetes 原生 CTF 竞赛平台，支持动态容器靶机、VPC 网络隔离、完整赛事管理">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

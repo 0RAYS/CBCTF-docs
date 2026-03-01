@@ -4,255 +4,69 @@ sidebar_position: 2
 
 # 快速上手
 
-CBCTF 提供三种部署方式：
+## 部署方式对比
 
-| 方式 | 适用场景 |
-|------|---------|
-| **Docker** | 本地快速体验、小规模部署 |
-| **Helm（推荐）** | 生产级 Kubernetes 部署，自动管理 MySQL/Redis |
-| **二进制** | 已有 K8s 集群、需要自定义部署的场景 |
+| 方式 | 适用场景 | 优点 | 缺点 |
+|------|---------|------|------|
+| **Docker** | 本地体验、小规模测试 | 零依赖、5 分钟上线 | 不支持高可用，资源有限 |
+| **Helm（推荐）** | 生产级 Kubernetes 部署 | 自动管理 MySQL/Redis，支持完整功能 | 需要 K8s 集群 |
+| **二进制** | 自定义部署、已有基础设施 | 最灵活 | 需手动维护依赖 |
 
----
-
-## Docker 部署
-
-### 前置条件
-
-- Docker 24+
-- Docker Compose v2
-- Kubernetes 集群（用于动态容器题目）
-
-### 步骤
-
-1. 创建 `docker-compose.yaml`：
-
-   ```yaml
-   services:
-     cbctf:
-       image: ghcr.io/0rays/cbctf:latest
-       ports:
-         - "8000:8000"
-       volumes:
-         - ./config.yaml:/app/config.yaml
-         - ./data:/app/data
-         - ./admin.yaml:/app/admin.yaml   # K8s kubeconfig
-       depends_on:
-         mysql:
-           condition: service_healthy
-         redis:
-           condition: service_started
-
-     mysql:
-       image: mysql:8.0
-       environment:
-         MYSQL_ROOT_PASSWORD: rootpassword
-         MYSQL_DATABASE: cbctf
-         MYSQL_USER: cbctf
-         MYSQL_PASSWORD: cbctf_password
-       volumes:
-         - mysql_data:/var/lib/mysql
-       healthcheck:
-         test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-         interval: 10s
-         timeout: 5s
-         retries: 5
-
-     redis:
-       image: redis:7-alpine
-       command: redis-server --requirepass redis_password
-       volumes:
-         - redis_data:/data
-
-   volumes:
-     mysql_data:
-     redis_data:
-   ```
-
-2. 创建 `config.yaml`（完整字段说明见 [配置说明](/docs/depoly/settings)）：
-
-   ```yaml
-   host: http://your.domain.com
-
-   path: /app/data
-
-   gin:
-     host: 0.0.0.0
-     port: 8000
-     cors:
-       - http://your.domain.com
-     jwt:
-       secret: change-this-to-a-random-string
-
-   gorm:
-     mysql:
-       host: mysql
-       port: 3306
-       user: cbctf
-       pwd: cbctf_password
-       db: cbctf
-
-   redis:
-     host: redis
-     port: 6379
-     pwd: redis_password
-
-   k8s:
-     config: /app/admin.yaml
-     namespace: cbctf
-   ```
-
-3. 将 K8s 集群的 kubeconfig 复制为 `./admin.yaml`。
-
-4. 启动服务：
-
-   ```bash
-   docker compose up -d
-   ```
-
-5. 查看管理员初始密码：
-
-   ```bash
-   docker compose logs cbctf | grep "Init Admin"
-   ```
+如果您只是想快速体验平台功能，选择 **Docker**；如果需要承办正式比赛，推荐使用 **Helm** 部署在 Kubernetes 集群上。
 
 ---
 
-## Helm 部署（推荐）
+## Docker 快速部署
 
-适用于生产 Kubernetes 环境，Helm Chart 会自动部署 MySQL、Redis 并完成配置注入。
-
-详见 [Helm 部署](/docs/depoly/helm)。
-
----
-
-## 二进制部署
-
-适用于已有 K8s 集群、但不使用 Helm 的场景，需自行准备 MySQL 和 Redis。
-
-### 前置条件
-
-- Go 1.26+
-- Node.js 22+，pnpm v10+
-- MySQL 8.0+
-- Redis 6.0+
-- Kubernetes 集群（参考 [集群部署](/docs/depoly/depoly.md)）
-
-### 编译
-
-1. 克隆仓库：
-
-   ```bash
-   git clone https://github.com/0RAYS/CBCTF.git
-   cd CBCTF
-   ```
-
-2. 编译前端（构建产物将被 Go 二进制嵌入）：
-
-   ```bash
-   cd frontend
-   pnpm install
-   pnpm run build
-   cd ..
-   ```
-
-3. 编译后端：
-
-   ```bash
-   # 推荐：含流量捕获功能（需要 libpcap-dev）
-   # Ubuntu: sudo apt install -y libpcap-dev
-   CGO_ENABLED=1 go build \
-     -ldflags="-s -w -linkmode external -extldflags '-static'" \
-     -trimpath -o cbctf .
-
-   # 不含流量捕获（无需 CGO）
-   go build -ldflags="-s -w" -trimpath -o cbctf .
-   ```
-
-### 配置
-
-首次运行会自动生成 `config.yaml`，根据实际环境修改后重新运行。完整字段说明见 [配置说明](/docs/depoly/settings)。
-
-```yaml
-host: https://your.domain.com    # 平台对外访问地址（OAuth 回调、邮件链接等均使用此地址）
-
-path: ./data                      # 数据存储目录，需具备读写权限
-
-gin:
-  host: 0.0.0.0
-  port: 8000
-  proxies:
-    - 10.0.0.1                    # 反向代理服务器 IP，用于获取真实客户端 IP
-  cors:
-    - https://your.domain.com
-  jwt:
-    secret: change-this-to-a-random-string
-
-gorm:
-  mysql:
-    host: 127.0.0.1
-    port: 3306
-    user: cbctf
-    pwd: your-mysql-password
-    db: cbctf
-
-redis:
-  host: 127.0.0.1
-  port: 6379
-  pwd: your-redis-password
-
-k8s:
-  config: ./admin.yaml            # K8s 集群 kubeconfig 路径
-  namespace: cbctf
-```
-
-### 运行
+详细说明见 [Docker 部署](/docs/deploy/docker)，以下为极简流程：
 
 ```bash
-# 默认加载 ./config.yaml
-./cbctf
-
-# 指定配置文件路径
-./cbctf -c /path/to/config.yaml
-```
-
-### 后台运行（systemd）
-
-创建 `/etc/systemd/system/cbctf.service`：
-
-```ini
-[Unit]
-Description=CBCTF Service
-After=network.target
-
-[Service]
-Type=simple
-User=cbctf
-WorkingDirectory=/opt/cbctf
-ExecStart=/opt/cbctf/cbctf
-Restart=on-failure
-RestartSec=5s
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable --now cbctf
+# 1. 准备 docker-compose.yaml 和 config.yaml（见 Docker 部署文档）
+# 2. 复制 K8s kubeconfig（如使用容器题功能）
+cp ~/.kube/config ./admin.yaml
+# 3. 启动服务
+docker compose up -d
+# 4. 查看初始管理员密码
+docker compose logs cbctf | grep "Init Admin"
+# 5. 浏览器访问
+#    http://localhost:8000/platform/#/login
 ```
 
 ---
 
-## 初始化管理员
+## Helm 快速部署
 
-无论使用哪种部署方式，当数据库中不存在管理员账号时，服务启动后将自动创建管理员并将凭据打印至日志：
+详细说明见 [Helm 部署](/docs/deploy/helm)，以下为极简流程：
+
+```bash
+# 1. 添加 Chart 仓库
+helm repo add 0rays https://0rays.github.io/CBCTF-charts
+helm repo update
+# 2. 安装（最小配置）
+helm install cbctf 0rays/cbctf \
+  --set cbctf.host=https://your.domain.com \
+  --set ingress.enabled=true \
+  --set ingress.hosts[0].host=your.domain.com
+# 3. 查看初始管理员密码
+kubectl logs deployment/cbctf | grep "Init Admin"
+```
+
+---
+
+## 初始登录
+
+所有部署方式在首次启动时，若数据库中没有管理员账号，平台会自动创建并将凭据打印到日志：
 
 ```
 Init Admin: Admin{ name: admin, password: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, email: admin@0rays.club}
 ```
 
-管理员登录地址：`https://your.domain.com/platform/#/admin/login`
+- **Docker**：`docker compose logs cbctf | grep "Init Admin"`
+- **Helm**：`kubectl logs deployment/cbctf | grep "Init Admin"`
+- **二进制**：查看终端输出或 `./logs/` 目录下的日志文件
+
+登录地址：`https://your.domain/platform/#/login`
 
 :::warning
-请在首次登录后立即修改初始密码。
+首次登录后请立即修改初始密码，并检查 `gin.jwt.secret` 配置。
 :::

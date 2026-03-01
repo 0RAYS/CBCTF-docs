@@ -4,42 +4,42 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: '多题型支持',
+    icon: '🎯',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        支持问答题、静态题、动态附件题、容器题四种类型。
+        每道题可配置多个 flag，支持静态、动态、UUID 三种 flag 格式。
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: '动态容器靶机',
+    icon: '🐳',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        基于 Kubernetes 为每支队伍部署独立靶机，支持 Pod 网络和
+        KubeOVN VPC 网络隔离，支持流量捕获和 FRP 端口转发。
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: '完整赛事管理',
+    icon: '🏆',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        多种计分策略（静态/线性/对数）、三血奖励、RBAC 权限控制、
+        内置作弊检测、Webhook 集成、Prometheus 监控。
       </>
     ),
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({icon, title, description}) {
   return (
     <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+      <div className="text--center" style={{fontSize: '4rem', lineHeight: '1'}}>
+        {icon}
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>

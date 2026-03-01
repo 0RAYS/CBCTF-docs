@@ -1,117 +1,118 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
-# 动态Flag
+# Flag 规则
 
-CBCTF 自带对动态附件题目和容器题目 flag 分发的支持，支持多个 flag 注入同时注入
+CBCTF 支持三种 flag 类型，每道题可配置多个 flag，每个 flag 独立计分。
 
-## 配置规则
+## Flag 类型
 
-flag 生成规则有如下三种，当采用符合格式 flag 时，将会自动替换前缀为比赛所设置的前缀，一下所有示例前缀均为 `CBCTF`
+| 类型 | 配置格式 | 生成结果（前缀 `CBCTF`） | 特点 |
+|------|---------|------------------------|------|
+| 静态 | `static{content}` | `CBCTF{content}` | 所有队伍相同 |
+| 动态 | `dynamic{template}` | `CBCTF{ThiliS-iS-4_Dyn4MIC_FLaG}` | 每队不同，**长度可变** |
+| UUID | `uuid{}` | `CBCTF{550e8400-e29b-41d4-a716-446655440000}` | 每队不同，标准 UUID 格式 |
 
-1. 静态 flag
+> flag 的实际前缀由比赛配置中的 `prefix` 字段决定，而非固定为 `CBCTF`。
 
-   静态 flag 适用于所有类型题目，flag 内容固定不变
+## 静态 Flag
 
-   ```text
-   static{this_is_a_static_flag}
-   ```
-   
-   当被添加至比赛时，flag 将会变为
+```text
+配置：static{this_is_a_static_flag}
+生成：CBCTF{this_is_a_static_flag}
+```
 
-   ```text
-   CBCTF{this_is_a_static_flag}
-   ```
+所有队伍的 flag 内容相同。适用于所有题目类型。
 
-2. 动态 flag
+## 动态 Flag
 
-   动态 flag 适用于所有类型题目，flag 内容基于模板随机生成，保持可读性，**请注意：flag 的长度可能会发生变化，请确保题目不会因为长度变化导致问题**
+```text
+配置：dynamic{this_is_a_dynamic_flag}
+生成：CBCTF{ThiliS-iS-4_Dyn4MIC_FLaG}
+```
 
-   ```text
-   dynamic{this_is_a_dynamic_flag}
-   ```
+基于模板随机替换字符，保持可读性。**生成结果的长度可能与模板长度不同**，题目设计中不得依赖 flag 长度。
 
-   当被添加至比赛时，flag 将会变为
+## UUID Flag
 
-   ```text
-   CBCTF{ThiliS-iS-4_Dyn4MIC_FLaG}
-   ```
+```text
+配置：uuid{}
+生成：CBCTF{550e8400-e29b-41d4-a716-446655440000}
+```
 
-3. UUID flag
+标准 UUID v4 格式，长度固定，每队不同。
 
-   UUID flag 适用于所有类型题目，flag 内容为标准 UUID 格式
+## Flag 注入方式
 
-   ```text
-   uuid{}
-   ```
+### 动态附件题
 
-   当被添加至比赛时，flag 将会变为
+平台自动调用生成器容器中的 `/root/run.sh` 脚本，将 flag 作为参数传入：
 
-   ```text
-   CBCTF{550e8400-e29b-41d4-a716-446655440000}
-   ```
+```bash
+/root/run.sh {team_id} {base64(base64(flag1),base64(flag2),...)}
+```
 
-## 注入方式
+示例（team_id=1，两个 flag）：
 
-针对动态附件题目与容器题目，使用两种不同的方式进行 flag 注入
+```bash
+/root/run.sh 1 UTBKRFZFWjdabXhoWnpGOSxRMEpEVkVaN1pteGhaeko5
+```
 
-### 动态附件题目
+其中第二个参数为 `base64(base64("CBCTF{flag1}") + "," + base64("CBCTF{flag2}"))` 的结果。
 
-动态附件题目的 flag，将有平台在生成器容器中，自动调用 `/root/run.sh` 脚本进行注入，该脚本需要出题人进行编写。调用该脚本时执行的命令如下
-    
-   ```bash
-   # `team_id` 为队伍 ID，类型 int
-   /root/run.sh team_id base64(base64(flag1),base64(flag2),...)
-   ```
-   
-   示例：
-   ```bash
-   # team_id: 1
-   # flag1:   CBCTF{flag1}
-   # flag2:   CBCTF{flag2}
-   /root/run.sh 1 UTBKRFZFWjdabXhoWnpGOSxRMEpEVkVaN1pteGhaeko5
-   ```
-   
-### 容器题目
+### 容器题
 
-容器题目的 flag，将由平台在容器启动时，自动注入至容器内，支持两种注入方式：
+**方式一：环境变量注入**
 
-1. 依据环境变量进行注入，环境变量的名称由出题人编写题目 `docker-compose.yaml` 时指定，**必须以 `FLAG_` 作为前缀**。示例如下：
+环境变量名必须以 `FLAG_` 为前缀，平台在启动容器时替换 flag 值：
 
-   ```yaml
-   services:
-     web:
-       image: nginx:latest
-       environment:
-         - FLAG_1=dynamic{this_is_a_dynamic_flag}
-         - FLAG_2=static{this_is_a_static_flag}
-         - FLAG_3=uuid{}
-       ports:
-         - "80:80"
-   ```
+```yaml
+services:
+  web:
+    image: nginx:latest
+    environment:
+      - FLAG_1=dynamic{this_is_a_dynamic_flag}
+      - FLAG_2=static{this_is_a_static_flag}
+      - FLAG_3=uuid{}
+    ports:
+      - "80:80"
+```
 
-2. 依据文件进行注入，文件路径由出题人编写题目 `docker-compose.yaml` 时指定。示例如下：
+**方式二：Volume 文件注入**
 
-   ```yaml
-   services:
-     web:
-       image: nginx:latest
-       volumes:
-         - FLAG_1:/flags/flag1.txt
-         - FLAG_2:/flags/flag2.txt
-       ports:
-         - "80:80"
+通过 volume labels 配置 flag，平台将 flag 写入容器内挂载的文件路径：
 
-   volumes:
-     FLAG_1:
-       labels:
-         - value=uuid{}
-     FLAG_2:
-       labels:
-         - value=dynamic{this_is_a_dynamic_flag}
-   ```
+```yaml
+services:
+  web:
+    image: nginx:latest
+    volumes:
+      - FLAG_1:/flags/flag1.txt
+      - FLAG_2:/flags/flag2.txt
+    ports:
+      - "80:80"
 
-## flag 生成节点
+volumes:
+  FLAG_1:
+    labels:
+      - value=uuid{}
+  FLAG_2:
+    labels:
+      - value=dynamic{this_is_a_dynamic_flag}
+```
 
-队伍的 flag 并非每次启动容器或下载附件时进行随机，只有当题目进行初始化或重置题目时才会随机生成
+## Flag 生成时机
+
+队伍的 flag **仅在初始化（init）或重置（reset）时生成**，容器重启不重新生成 flag。
+
+这意味着：
+- 选手重启容器不会改变 flag
+- 选手执行「重置题目」时会生成新 flag，旧 flag 失效
+- 题目测试模式（admin）不产生真实 flag 记录
+
+## 多 Flag 配置
+
+每道题可配置多个 flag，每个 flag 独立计分。选手提交其中任一 flag 即可获得对应分数，提交所有 flag 可获得该题目的全部分数。
+
+Flag 前缀由所在比赛的 `prefix` 字段配置，不同比赛可以使用不同前缀（如 `flag`、`CTF`、`CBCTF`）。
