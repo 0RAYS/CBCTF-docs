@@ -43,19 +43,14 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
       - name: Install dependencies
-        working-directory: CBCTF-docs
         run: pnpm install --frozen-lockfile
       - name: Build
-        working-directory: CBCTF-docs
         run: pnpm build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: CBCTF-docs/build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: '.'
+          path: build
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
